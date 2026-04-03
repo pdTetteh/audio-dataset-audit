@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AudioDatasetAudit Report</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --border: #d9e2f1;
+      --text: #172033;
+      --muted: #5a6780;
+      --pass-bg: #e7f7ee;
+      --pass-text: #156c3e;
+      --warn-bg: #fff4db;
+      --warn-text: #8a5a00;
+      --fail-bg: #fde8e8;
+      --fail-text: #a11b1b;
+      --neutral-bg: #eef2ff;
+      --neutral-text: #3f4d67;
+      --shadow: 0 12px 30px rgba(22, 32, 51, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+        BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 40px 20px 64px;
+    }
+    .hero {
+      margin-bottom: 28px;
+    }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 2.25rem;
+      line-height: 1.1;
+    }
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 760px;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
+      margin: 24px 0 30px;
+    }
+    .summary-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+    .summary-label {
+      font-size: 0.92rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .summary-value {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+    .check-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+    }
+    .check-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .check-header h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      line-height: 1.25;
+    }
+    .summary {
+      margin: 0 0 18px;
+      color: var(--muted);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      background: #fcfdff;
+    }
+    .panel h3 {
+      margin: 0 0 12px;
+      font-size: 1rem;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.38rem 0.72rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+    .status-pass { background: var(--pass-bg); color: var(--pass-text); }
+    .status-warn { background: var(--warn-bg); color: var(--warn-text); }
+    .status-fail { background: var(--fail-bg); color: var(--fail-text); }
+    .status-neutral { background: var(--neutral-bg); color: var(--neutral-text); }
+    .table-wrap { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.94rem;
+    }
+    th, td {
+      padding: 0.72rem 0.8rem;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      font-size: 0.84rem;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      color: var(--muted);
+      background: #f8faff;
+    }
+    tr:last-child td { border-bottom: none; }
+    .empty { margin: 0; color: var(--muted); }
+    .footer {
+      margin-top: 32px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    @media (max-width: 640px) {
+      .container { padding: 24px 14px 40px; }
+      .hero h1 { font-size: 1.7rem; }
+      .check-card { padding: 18px; }
+      .check-header { align-items: flex-start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header class="hero">
+      <h1>AudioDatasetAudit Report</h1>
+      <p>Structured quality checks for speech and audio datasets,
+        including split hygiene, leakage detection, metadata coverage, and
+        class balance.</p>
+    </header>
+
+    <section class="summary-grid">
+      <div class="summary-card status-neutral"><div class="summary-label">Checks</div><div class="summary-value">13</div></div><div class="summary-card status-pass"><div class="summary-label">Pass</div><div class="summary-value">7</div></div><div class="summary-card status-warn"><div class="summary-label">Warn</div><div class="summary-value">3</div></div><div class="summary-card status-fail"><div class="summary-label">Fail</div><div class="summary-value">3</div></div>
+    </section>
+
+    <section class="check-card"><div class="check-header"><h2>missingness</h2><span class="status-pill status-pass">PASS</span></div><p class="summary">Calculated missing value counts and rates for all columns.</p><div class="grid"><div class="panel"><h3>Metrics</h3><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>rows</td><td>5</td></tr><tr><td>missing_counts</td><td>{item_id=0, path=0, split=0, label=0, speaker_id=0, device_id=0, date=0, location=0, duration=0}</td></tr><tr><td>missing_rates</td><td>{item_id=0.0, path=0.0, split=0.0, label=0.0, speaker_id=0.0, device_id=0.0, date=0.0, location=0.0, duration=0.0}</td></tr></tbody></table></div></div><div class="panel"><h3>Details</h3><p class="empty">No detail rows.</p></div></div></section><section class="check-card"><div class="check-header"><h2>imbalance</h2><span class="status-pill status-pass">PASS</span></div><p class="summary">Computed class distribution from the label column.</p><div class="grid"><div class="panel"><h3>Metrics</h3><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>class_counts</td><td>{clean=2, short=1, broken=1, missing=1}</td></tr><tr><td>max_to_min_ratio</td><td>2.0</td></tr><tr><td>num_classes</td><td>4</td></tr></tbody></table></div></div><div class="panel"><h3>Details</h3><p class="empty">No detail rows.</p></div></div></section><section class="check-card"><div class="check-header"><h2>duplicates</h2><span class="status-pill status-pass">PASS</span></div><p class="summary">Checked for duplicate item IDs and duplicate file paths.</p><div class="grid"><div class="panel"><h3>Metrics</h3><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>duplicate_item_id_count</td><td>0</td></tr><tr><td>duplicate_path_count</td><td>0</td></tr></tbody></table></div></div><div class="panel"><h3>Details</h3><div class="table-wrap"><table><thead><tr><th>duplicate_item_ids</th><th>duplicate_paths</th></tr></thead><tbody><tr><td>[]</td><td>[]</td></tr></tbody></table></div></div></div></section><section class="check-card"><div class="check-header"><h2>split_integrity</h2><span class="status-pill status-pass">PASS</span></div><p class="summary">Checked split labels and summarized split distribution.</p><div class="grid"><div class="panel"><h3>Metrics</h3><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>split_counts</td><td>{train=2, test=2, val=1}</td></tr><tr><td>invalid_split_values</td><td>[]</td></tr><tr><td>missing_core_splits</td><td>[]</td></tr></tbody></table></div></div><div class="panel"><h3>Details</h3><p class="empty">No detail rows.</p></div></div></section><section class="check-card"><div class="check-header"><h2>speaker_id_leakage</h2><span class="status-pill status-pass">PASS</span></div><p class="summary">No cross-split leakage detected for speaker values among 5 unique entries.</p><div class="grid"><div class="panel"><h3>Metrics</h3><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>field</td><td>speaker_id</td></tr><tr><td>rows_with_field</td><td>5</td></tr><tr><td>unique_values</td><td>5</td></tr><tr><td>overlap_count</td><td>0</td></tr></tbody></table></div></div><div class="panel"><h3>Details</h3><p class="empty">No detail rows.</p></div></div></section><section class="check-card"><div class="check-header"><h2>device_id_leakage</h2><span class="status-pill status-pass">PASS</span></div><p class="summary">No cross-split leakage detected for device values among 5 unique entries.</p><div class="grid"><div class="panel"><h3>Metrics</h3><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>field</td><td>device_id</td></tr><tr><td>rows_with_field</td><td>5</td></tr><tr><td>unique_values</td><td>5</td></tr><tr><td>overlap_count</td><td>0</td></tr></tbody></table></div></div><div class="panel"><h3>Details</h3><p class="empty">No detail rows.</p></div></div></section><section class="check-card"><div class="check-header"><h2>date_leakage</h2><span class="status-pill status-pass">PASS</span></div><p class="summary">No cross-split leakage detected for recording date values among 5 unique entries.</p><div class="grid"><div class="panel"><h3>Metrics</h3><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>field</td><td>date</td></tr><tr><td>rows_with_field</td><td>5</td></tr><tr><td>unique_values</td><td>5</td></tr><tr><td>overlap_count</td><td>0</td></tr></tbody></table></div></div><div class="panel"><h3>Details</h3><p class="empty">No detail rows.</p></div></div></section><section class="check-card"><div class="check-header"><h2>location_leakage</h2><span class="status-pill status-fail">FAIL</span></div><p class="summary">Detected 1 location value(s) present in more than one split.</p><div class="grid"><div class="panel"><h3>Metrics</h3><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>field</td><td>location</td></tr><tr><td>rows_with_field</td><td>5</td></tr><tr><td>unique_values</td><td>3</td></tr><tr><td>overlap_count</td><td>1</td></tr></tbody></table></div></div><div class="panel"><h3>Details</h3><div class="table-wrap"><table><thead><tr><th>value</th><th>splits</th><th>num_splits</th></tr></thead><tbody><tr><td>accra</td><td>[train, val]</td><td>2</td></tr></tbody></table></div></div></div></section><section class="check-card"><div class="check-header"><h2>file_existence</h2><span class="status-pill status-fail">FAIL</span></div><p class="summary">Detected 1 manifest row(s) pointing to missing files.</p><div class="grid"><div class="panel"><h3>Metrics</h3><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>rows_checked</td><td>5</td></tr><tr><td>unique_paths_checked</td><td>5</td></tr><tr><td>missing_file_count</td><td>1</td></tr></tbody></table></div></div><div class="panel"><h3>Details</h3><div class="table-wrap"><table><thead><tr><th>item_id</th><th>path</th><th>resolved_path</th></tr></thead><tbody><tr><td>p005</td><td>audio/missing.wav</td><td>/mnt/data/workrepo/audio-dataset-audit/examples/audio/missing.wav</td></tr></tbody></table></div></div></div></section><section class="check-card"><div class="check-header"><h2>audio_readability</h2><span class="status-pill status-fail">FAIL</span></div><p class="summary">Detected 1 existing file(s) that could not be read as audio.</p><div class="grid"><div class="panel"><h3>Metrics</h3><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>rows_checked</td><td>5</td></tr><tr><td>unique_paths_checked</td><td>5</td></tr><tr><td>unreadable_file_count</td><td>1</td></tr></tbody></table></div></div><div class="panel"><h3>Details</h3><div class="table-wrap"><table><thead><tr><th>item_id</th><th>path</th><th>resolved_path</th><th>error</th></tr></thead><tbody><tr><td>p004</td><td>audio/broken.wav</td><td>/mnt/data/workrepo/audio-dataset-audit/examples/audio/broken.wav</td><td>Error opening &#x27;/mnt/data/workrepo/audio-dataset-audit/examples/audio/broken.wav&#x27;: Format not recognised.</td></tr></tbody></table></div></div></div></section><section class="check-card"><div class="check-header"><h2>sample_rate_consistency</h2><span class="status-pill status-warn">WARN</span></div><p class="summary">Observed 2 sample rates; dominant rate is 16000 Hz.</p><div class="grid"><div class="panel"><h3>Metrics</h3><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>readable_file_count</td><td>3</td></tr><tr><td>dominant_sample_rate</td><td>16000</td></tr><tr><td>dominant_count</td><td>2</td></tr><tr><td>sample_rate_counts</td><td>{8000=1, 16000=2}</td></tr><tr><td>mismatch_count</td><td>1</td></tr></tbody></table></div></div><div class="panel"><h3>Details</h3><div class="table-wrap"><table><thead><tr><th>item_id</th><th>path</th><th>sample_rate</th><th>dominant_sample_rate</th></tr></thead><tbody><tr><td>p002</td><td>audio/stereo_8k.wav</td><td>8000</td><td>16000</td></tr></tbody></table></div></div></div></section><section class="check-card"><div class="check-header"><h2>channel_consistency</h2><span class="status-pill status-warn">WARN</span></div><p class="summary">Observed 2 channel layouts; dominant layout uses 1 channel(s).</p><div class="grid"><div class="panel"><h3>Metrics</h3><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>readable_file_count</td><td>3</td></tr><tr><td>dominant_channels</td><td>1</td></tr><tr><td>dominant_count</td><td>2</td></tr><tr><td>channel_count_distribution</td><td>{1=2, 2=1}</td></tr><tr><td>mismatch_count</td><td>1</td></tr></tbody></table></div></div><div class="panel"><h3>Details</h3><div class="table-wrap"><table><thead><tr><th>item_id</th><th>path</th><th>channels</th><th>dominant_channels</th></tr></thead><tbody><tr><td>p002</td><td>audio/stereo_8k.wav</td><td>2</td><td>1</td></tr></tbody></table></div></div></div></section><section class="check-card"><div class="check-header"><h2>duration_sanity</h2><span class="status-pill status-warn">WARN</span></div><p class="summary">Duration analysis flagged zero-length, extreme, or manifest-mismatched files.</p><div class="grid"><div class="panel"><h3>Metrics</h3><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>readable_file_count</td><td>3</td></tr><tr><td>min_duration</td><td>0.02</td></tr><tr><td>median_duration</td><td>1.0</td></tr><tr><td>max_duration</td><td>1.0</td></tr><tr><td>zero_duration_count</td><td>0</td></tr><tr><td>suspicious_short_count</td><td>1</td></tr><tr><td>suspicious_long_count</td><td>0</td></tr><tr><td>manifest_duration_mismatch_count</td><td>1</td></tr><tr><td>manifest_has_duration</td><td>True</td></tr></tbody></table></div></div><div class="panel"><h3>Details</h3><div class="table-wrap"><table><thead><tr><th>item_id</th><th>path</th><th>issue</th><th>duration</th><th>manifest_duration</th><th>probed_duration</th><th>delta</th></tr></thead><tbody><tr><td>p003</td><td>audio/short_16k.wav</td><td>very_short</td><td>0.02</td><td></td><td></td><td></td></tr><tr><td>p003</td><td>audio/short_16k.wav</td><td>manifest_duration_mismatch</td><td></td><td>0.5</td><td>0.02</td><td>0.48</td></tr></tbody></table></div></div></div></section>
+
+    <p class="footer">Generated by AudioDatasetAudit.</p>
+  </main>
+</body>
+</html>

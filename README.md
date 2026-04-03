@@ -1,8 +1,10 @@
 # AudioDatasetAudit
 
-**Find leakage, imbalance, and metadata gaps before model training.**
+**Find leakage, imbalance, metadata gaps, and file-level audio issues before model training.**
 
 AudioDatasetAudit is an open-source toolkit for auditing speech and audio datasets for leakage, imbalance, metadata gaps, split hygiene, and file-level quality issues before model training or benchmark release.
+
+![HTML report preview](assets/report-preview.png)
 
 ## Why this exists
 
@@ -13,9 +15,12 @@ Speech and audio results are often weakened by silent dataset issues such as:
 - severe class imbalance
 - missing metadata
 - inconsistent split definitions
-- broken or corrupted files
+- missing audio files
+- corrupted or unreadable files
+- inconsistent sample rates or channel counts
+- duration metadata that does not match the actual audio on disk
 
-AudioDatasetAudit makes these issues visible through reproducible reports.
+AudioDatasetAudit makes these issues visible through reproducible JSON, Markdown, and HTML reports.
 
 ## Current features
 
@@ -28,15 +33,14 @@ AudioDatasetAudit makes these issues visible through reproducible reports.
 - device leakage detection
 - date leakage detection
 - location leakage detection
+- file existence checks
+- audio readability checks
+- sample-rate consistency checks
+- channel consistency checks
+- duration sanity checks
+- manifest-vs-probed duration mismatch checks
 - JSON, Markdown, and HTML reports
 - CLI interface
-
-## Planned next
-
-- audio file probing
-- duration distribution summaries
-- pluggable custom checks
-- richer visual summaries inside HTML reports
 
 ## Installation
 
@@ -48,63 +52,23 @@ python3 -m pip install -e '.[dev]'
 
 ## Quick start
 
-Prepare a manifest CSV:
-
-```csv
-item_id,path,split,label,speaker_id,device_id,date,location,duration
-001,data/a.wav,train,car_horn,spk1,phoneA,2026-01-10,accra,3.2
-002,data/b.wav,val,crowd,spk1,phoneB,2026-01-11,accra,2.8
-003,data/c.wav,test,market,spk3,phoneC,2026-01-12,kumasi,4.1
-004,data/d.wav,validation,market,spk4,phoneA,2026-01-10,kumasi,3.9
-```
-
-Run an audit and generate a Markdown report:
+Generate an HTML report from the included probe example:
 
 ```bash
-python3 -m audiodatasetaudit.cli examples/leaky_manifest.csv --output examples/leaky_report.md
+python3 -m audiodatasetaudit.cli examples/probe_manifest.csv --format html --output examples/probe_report.html
+```
+
+Generate a Markdown report:
+
+```bash
+python3 -m audiodatasetaudit.cli examples/probe_manifest.csv --output examples/probe_report.md
 ```
 
 Generate a JSON report:
 
 ```bash
-python3 -m audiodatasetaudit.cli examples/leaky_manifest.csv --format json --output report.json
+python3 -m audiodatasetaudit.cli examples/probe_manifest.csv --format json --output examples/probe_report.json
 ```
-
-Generate a polished HTML report:
-
-```bash
-python3 -m audiodatasetaudit.cli examples/leaky_manifest.csv --format html --output examples/leaky_report.html
-```
-
-## Example report output
-
-Running the leaky example manifest produces failures for cross-split overlap:
-
-```markdown
-## speaker_id_leakage
-- Status: **fail**
-- Summary: Detected 1 speaker value(s) present in more than one split.
-- Details:
-  - {value=spk01, splits=[train, val], num_splits=2}
-
-## device_id_leakage
-- Status: **fail**
-- Summary: Detected 1 device value(s) present in more than one split.
-- Details:
-  - {value=phoneA, splits=[train, val], num_splits=2}
-```
-
-The repository includes both:
-- [`examples/leaky_report.md`](examples/leaky_report.md)
-- [`examples/leaky_report.html`](examples/leaky_report.html)
-
-## What the HTML report adds
-
-The HTML report provides:
-- summary cards for pass, warn, and fail counts
-- a separate audit card for each check
-- metrics and details in readable tables
-- a cleaner artifact you can share with collaborators or include in QA workflows
 
 ## Example questions AudioDatasetAudit answers
 
@@ -113,23 +77,83 @@ The HTML report provides:
 - Are there duplicate IDs or duplicate file paths?
 - Is important metadata missing for many rows?
 - Are the same speakers, devices, dates, or locations leaking across splits?
+- Are any files missing or unreadable on disk?
+- Are sample rates mixed unexpectedly?
+- Are some files stereo while others are mono?
+- Does the manifest duration disagree with the actual audio?
+
+## Example report assets in this repo
+
+- `examples/leaky_report.md`
+- `examples/leaky_report.html`
+- `examples/probe_report.md`
+- `examples/probe_report.html`
+
+The probe example intentionally includes:
+- one missing file reference
+- one corrupt audio file
+- mixed sample rates
+- mixed channel counts
+- a very short file
+- a manifest duration mismatch
+
+## Manifest schema
+
+### Required columns
+- `item_id`
+- `path`
+- `split`
+- `label`
+
+### Optional but recommended columns
+- `speaker_id`
+- `device_id`
+- `collector_id`
+- `date`
+- `location`
+- `language`
+- `duration`
+- `sample_rate`
+- `channels`
+- `source_dataset`
+
+### Example manifest
+
+```csv
+item_id,path,split,label,speaker_id,device_id,date,location,duration
+001,data/audio/001.wav,train,car_horn,spk01,phoneA,2026-01-10,accra,3.2
+002,data/audio/002.wav,val,crowd,spk02,phoneB,2026-01-11,accra,2.7
+003,data/audio/003.wav,test,market,spk03,phoneC,2026-01-12,kumasi,4.1
+```
 
 ## Repository layout
 
 ```text
 audio-dataset-audit/
+├── assets/
+├── docs/
 ├── examples/
 ├── src/audiodatasetaudit/
 ├── tests/
-├── docs/
 └── notebooks/
 ```
+
+## Release and issue drafts included
+
+To make GitHub publishing easier, the repo includes ready-to-paste drafts for releases and issues:
+
+- `docs/releases/v0.2.0.md`
+- `docs/releases/v0.3.0-draft.md`
+- `docs/github_issues/add-audio-probing.md`
+- `docs/github_issues/add-config-support.md`
+- `docs/github_issues/add-summary-visualizations.md`
 
 ## Roadmap
 
 - **v0.1**: manifest validation, missingness, imbalance, duplicates, split integrity
-- **v0.2**: leakage checks, HTML reports, visual summaries
-- **v0.3**: audio probing and quality checks
+- **v0.2**: leakage checks and HTML reports
+- **v0.3**: file-level audio probing and quality checks
+- **v0.4**: config support and summary visualizations
 - **v1.0**: stable API, plugins, public dataset examples
 
 ## Contributing
@@ -138,6 +162,7 @@ Contributions are welcome. Good first areas:
 - docs improvements
 - new checks
 - report templates
+- visual summaries for HTML reports
 - test cases for edge conditions
 - public dataset example manifests
 

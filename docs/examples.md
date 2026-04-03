@@ -1,23 +1,25 @@
 # Examples
 
-## Minimal manifest
+## Leakage example
 
-Use `examples/minimal_manifest.csv` when you want a clean starter manifest with no expected failures.
-
-## Leaky manifest
-
-Use `examples/leaky_manifest.csv` when you want to demonstrate cross-split leakage detection.
-
-Run:
+Generate the HTML report:
 
 ```bash
-python3 -m audiodatasetaudit.cli examples/leaky_manifest.csv --output examples/leaky_report.md
+python3 -m audiodatasetaudit.cli examples/leaky_manifest.csv --format html --output examples/leaky_report.html
 ```
 
-This example intentionally triggers failures for:
-- `speaker_id_leakage`
-- `device_id_leakage`
-- `date_leakage`
-- `location_leakage`
+## File-level probing example
 
-The generated sample output lives in `examples/leaky_report.md`.
+Generate the HTML report:
+
+```bash
+python3 -m audiodatasetaudit.cli examples/probe_manifest.csv --format html --output examples/probe_report.html
+```
+
+The probe example demonstrates:
+- a missing file
+- an unreadable audio file
+- mixed sample rates
+- mixed channel counts
+- a very short file
+- a manifest duration mismatch

@@ -1,0 +1,6 @@
+item_id,path,split,label,speaker_id,device_id,date,location,duration
+p001,audio/mono_16k.wav,train,clean,spk1,recorderA,2026-01-10,accra,1.0
+p002,audio/stereo_8k.wav,val,clean,spk2,recorderB,2026-01-11,accra,1.0
+p003,audio/short_16k.wav,test,short,spk3,recorderC,2026-01-12,kumasi,0.5
+p004,audio/broken.wav,test,broken,spk4,recorderD,2026-01-13,tamale,0.1
+p005,audio/missing.wav,train,missing,spk5,recorderE,2026-01-14,accra,0.7

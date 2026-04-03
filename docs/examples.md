@@ -1,13 +1,23 @@
 # Examples
 
-## Minimal example
+## Minimal manifest
+
+Use `examples/minimal_manifest.csv` when you want a clean starter manifest with no expected failures.
+
+## Leaky manifest
+
+Use `examples/leaky_manifest.csv` when you want to demonstrate cross-split leakage detection.
+
+Run:
 
 ```bash
-audiodatasetaudit audit examples/minimal_manifest.csv --format markdown --output report.md
+python3 -m audiodatasetaudit.cli examples/leaky_manifest.csv --output examples/leaky_report.md
 ```
 
-## JSON output
+This example intentionally triggers failures for:
+- `speaker_id_leakage`
+- `device_id_leakage`
+- `date_leakage`
+- `location_leakage`
 
-```bash
-audiodatasetaudit audit examples/minimal_manifest.csv --format json --output report.json
-```
+The generated sample output lives in `examples/leaky_report.md`.

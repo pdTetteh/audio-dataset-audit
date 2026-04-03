@@ -1,0 +1,6 @@
+item_id,path,split,label,speaker_id,device_id,date,location,language,duration
+001,data/audio/001.wav,train,car_horn,spk01,phoneA,2026-01-10,accra,en,3.2
+002,data/audio/002.wav,val,crowd,spk01,phoneB,2026-01-11,accra,en,2.7
+003,data/audio/003.wav,test,market,spk03,phoneC,2026-01-12,kumasi,en,4.1
+004,data/audio/004.wav,validation,market,spk04,phoneA,2026-01-10,kumasi,en,3.9
+005,data/audio/005.wav,train,crowd,spk05,phoneD,2026-01-13,tamale,en,2.3

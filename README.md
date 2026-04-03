@@ -8,7 +8,7 @@ AudioDatasetAudit is an open-source toolkit for auditing speech and audio datase
 
 Speech and audio results are often weakened by silent dataset issues such as:
 - train/test leakage
-- same-speaker or same-device overlap across splits
+- same-speaker, same-device, or same-date overlap across splits
 - duplicate recordings
 - severe class imbalance
 - missing metadata
@@ -17,19 +17,22 @@ Speech and audio results are often weakened by silent dataset issues such as:
 
 AudioDatasetAudit makes these issues visible through reproducible reports.
 
-## Features
+## Current features
 
-### V0.1
 - manifest validation
 - missing metadata analysis
 - class imbalance reports
 - duplicate ID and duplicate path detection
 - split integrity checks
+- speaker leakage detection
+- device leakage detection
+- date leakage detection
+- location leakage detection
 - JSON and Markdown reports
 - CLI interface
 
-### Planned
-- speaker/device/date/location leakage checks
+## Planned next
+
 - HTML reports
 - audio file probing
 - duration distribution summaries
@@ -38,7 +41,9 @@ AudioDatasetAudit makes these issues visible through reproducible reports.
 ## Installation
 
 ```bash
-pip install -e .[dev]
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -e '.[dev]'
 ```
 
 ## Quick start
@@ -48,21 +53,42 @@ Prepare a manifest CSV:
 ```csv
 item_id,path,split,label,speaker_id,device_id,date,location,duration
 001,data/a.wav,train,car_horn,spk1,phoneA,2026-01-10,accra,3.2
-002,data/b.wav,val,crowd,spk2,phoneB,2026-01-11,accra,2.8
+002,data/b.wav,val,crowd,spk1,phoneB,2026-01-11,accra,2.8
 003,data/c.wav,test,market,spk3,phoneC,2026-01-12,kumasi,4.1
+004,data/d.wav,validation,market,spk4,phoneA,2026-01-10,kumasi,3.9
 ```
 
 Run an audit:
 
 ```bash
-audiodatasetaudit audit examples/minimal_manifest.csv --format markdown --output report.md
+python3 -m audiodatasetaudit.cli examples/leaky_manifest.csv --output examples/leaky_report.md
 ```
 
 Generate a JSON report:
 
 ```bash
-audiodatasetaudit audit examples/minimal_manifest.csv --format json --output report.json
+python3 -m audiodatasetaudit.cli examples/leaky_manifest.csv --format json --output report.json
 ```
+
+## Example report excerpt
+
+Running the leaky example manifest produces failures for cross-split overlap:
+
+```markdown
+## speaker_id_leakage
+- Status: **fail**
+- Summary: Detected 1 speaker value(s) present in more than one split.
+- Details:
+  - {value=spk01, splits=['train', 'val'], num_splits=2}
+
+## device_id_leakage
+- Status: **fail**
+- Summary: Detected 1 device value(s) present in more than one split.
+- Details:
+  - {value=phoneA, splits=['train', 'val'], num_splits=2}
+```
+
+A full sample report is included at [`examples/leaky_report.md`](examples/leaky_report.md).
 
 ## Example questions AudioDatasetAudit answers
 
@@ -70,7 +96,7 @@ audiodatasetaudit audit examples/minimal_manifest.csv --format json --output rep
 - Are some labels dramatically underrepresented?
 - Are there duplicate IDs or duplicate file paths?
 - Is important metadata missing for many rows?
-- Are the same speakers or devices leaking across splits?
+- Are the same speakers, devices, dates, or locations leaking across splits?
 
 ## Repository layout
 

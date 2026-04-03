@@ -1,11 +1,16 @@
+from __future__ import annotations
+
 from pathlib import Path
 from typing import Optional
+
 
 import typer
 from rich import print
 
+from audiodatasetaudit.checks.base import AuditCheck
 from audiodatasetaudit.checks.duplicates import DuplicateCheck
 from audiodatasetaudit.checks.imbalance import ImbalanceCheck
+from audiodatasetaudit.checks.leakage import LeakageCheck
 from audiodatasetaudit.checks.missingness import MissingnessCheck
 from audiodatasetaudit.checks.split_integrity import SplitIntegrityCheck
 from audiodatasetaudit.manifest import load_manifest
@@ -15,6 +20,19 @@ from audiodatasetaudit.reports.markdown_report import write_markdown_report
 app = typer.Typer(help="Audit speech and audio datasets for common quality risks.")
 
 
+def _build_checks() -> list[AuditCheck]:
+    return [
+        MissingnessCheck(),
+        ImbalanceCheck(),
+        DuplicateCheck(),
+        SplitIntegrityCheck(),
+        LeakageCheck("speaker_id", "speaker"),
+        LeakageCheck("device_id", "device"),
+        LeakageCheck("date", "recording date"),
+        LeakageCheck("location", "location"),
+    ]
+
+
 @app.command()
 def audit(
     manifest: Path = typer.Argument(..., help="Path to manifest CSV."),
@@ -22,13 +40,7 @@ def audit(
     output: Optional[Path] = typer.Option(None, help="Output report path."),
 ) -> None:
     df = load_manifest(manifest)
-    checks = [
-        MissingnessCheck(),
-        ImbalanceCheck(),
-        DuplicateCheck(),
-        SplitIntegrityCheck(),
-    ]
-    results = [check.run(df) for check in checks]
+    results = [check.run(df) for check in _build_checks()]
 
     print(f"[bold green]Loaded[/bold green] {len(df)} rows from {manifest}")
     for result in results:

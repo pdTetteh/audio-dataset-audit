@@ -1,7 +1,7 @@
+# ruff: noqa: B008
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Annotated
 
 import typer
 from rich import print
@@ -13,16 +13,11 @@ from audiodatasetaudit.checks.leakage import LeakageCheck
 from audiodatasetaudit.checks.missingness import MissingnessCheck
 from audiodatasetaudit.checks.split_integrity import SplitIntegrityCheck
 from audiodatasetaudit.manifest import load_manifest
+from audiodatasetaudit.reports.html_report import write_html_report
 from audiodatasetaudit.reports.json_report import write_json_report
 from audiodatasetaudit.reports.markdown_report import write_markdown_report
 
 app = typer.Typer(help="Audit speech and audio datasets for common quality risks.")
-
-ManifestArg = Annotated[Path, typer.Argument(..., help="Path to manifest CSV.")]
-FormatOption = Annotated[
-    str, typer.Option("markdown", help="Report format: markdown or json.")
-]
-OutputOption = Annotated[Path | None, typer.Option(None, help="Output report path.")]
 
 
 def _build_checks() -> list[AuditCheck]:
@@ -40,9 +35,11 @@ def _build_checks() -> list[AuditCheck]:
 
 @app.command()
 def audit(
-    manifest: ManifestArg,
-    format: FormatOption = "markdown",
-    output: OutputOption = None,
+    manifest: Path = typer.Argument(..., help="Path to manifest CSV."),
+    report_format: str = typer.Option(
+        "markdown", "--format", help="Report format: markdown, json, or html."
+    ),
+    output: Path | None = typer.Option(None, help="Output report path."),
 ) -> None:
     df = load_manifest(manifest)
     results = [check.run(df) for check in _build_checks()]
@@ -52,12 +49,14 @@ def audit(
         print(f"- {result.name}: {result.status}")
 
     if output is not None:
-        if format == "json":
+        if report_format == "json":
             write_json_report(results, str(output))
-        elif format == "markdown":
+        elif report_format == "markdown":
             write_markdown_report(results, str(output))
+        elif report_format == "html":
+            write_html_report(results, str(output))
         else:
-            raise typer.BadParameter("format must be one of: markdown, json")
+            raise typer.BadParameter("format must be one of: markdown, json, html")
         print(f"[bold blue]Report written to[/bold blue] {output}")
 
 

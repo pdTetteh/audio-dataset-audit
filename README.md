@@ -8,7 +8,7 @@ AudioDatasetAudit is an open-source toolkit for auditing speech and audio datase
 
 Speech and audio results are often weakened by silent dataset issues such as:
 - train/test leakage
-- same-speaker, same-device, or same-date overlap across splits
+- same-speaker, same-device, same-date, or same-location overlap across splits
 - duplicate recordings
 - severe class imbalance
 - missing metadata
@@ -28,15 +28,15 @@ AudioDatasetAudit makes these issues visible through reproducible reports.
 - device leakage detection
 - date leakage detection
 - location leakage detection
-- JSON and Markdown reports
+- JSON, Markdown, and HTML reports
 - CLI interface
 
 ## Planned next
 
-- HTML reports
 - audio file probing
 - duration distribution summaries
 - pluggable custom checks
+- richer visual summaries inside HTML reports
 
 ## Installation
 
@@ -58,7 +58,7 @@ item_id,path,split,label,speaker_id,device_id,date,location,duration
 004,data/d.wav,validation,market,spk4,phoneA,2026-01-10,kumasi,3.9
 ```
 
-Run an audit:
+Run an audit and generate a Markdown report:
 
 ```bash
 python3 -m audiodatasetaudit.cli examples/leaky_manifest.csv --output examples/leaky_report.md
@@ -70,7 +70,13 @@ Generate a JSON report:
 python3 -m audiodatasetaudit.cli examples/leaky_manifest.csv --format json --output report.json
 ```
 
-## Example report excerpt
+Generate a polished HTML report:
+
+```bash
+python3 -m audiodatasetaudit.cli examples/leaky_manifest.csv --format html --output examples/leaky_report.html
+```
+
+## Example report output
 
 Running the leaky example manifest produces failures for cross-split overlap:
 
@@ -79,16 +85,26 @@ Running the leaky example manifest produces failures for cross-split overlap:
 - Status: **fail**
 - Summary: Detected 1 speaker value(s) present in more than one split.
 - Details:
-  - {value=spk01, splits=['train', 'val'], num_splits=2}
+  - {value=spk01, splits=[train, val], num_splits=2}
 
 ## device_id_leakage
 - Status: **fail**
 - Summary: Detected 1 device value(s) present in more than one split.
 - Details:
-  - {value=phoneA, splits=['train', 'val'], num_splits=2}
+  - {value=phoneA, splits=[train, val], num_splits=2}
 ```
 
-A full sample report is included at [`examples/leaky_report.md`](examples/leaky_report.md).
+The repository includes both:
+- [`examples/leaky_report.md`](examples/leaky_report.md)
+- [`examples/leaky_report.html`](examples/leaky_report.html)
+
+## What the HTML report adds
+
+The HTML report provides:
+- summary cards for pass, warn, and fail counts
+- a separate audit card for each check
+- metrics and details in readable tables
+- a cleaner artifact you can share with collaborators or include in QA workflows
 
 ## Example questions AudioDatasetAudit answers
 

@@ -4,7 +4,6 @@ import pandas as pd
 
 from audiodatasetaudit.checks.leakage import LeakageCheck
 
-
 LEAKY_MANIFEST = Path("tests/fixtures/leaky_manifest.csv")
 
 

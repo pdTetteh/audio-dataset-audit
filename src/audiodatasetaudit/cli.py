@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
-
+from typing import Annotated
 
 import typer
 from rich import print
@@ -18,6 +17,12 @@ from audiodatasetaudit.reports.json_report import write_json_report
 from audiodatasetaudit.reports.markdown_report import write_markdown_report
 
 app = typer.Typer(help="Audit speech and audio datasets for common quality risks.")
+
+ManifestArg = Annotated[Path, typer.Argument(..., help="Path to manifest CSV.")]
+FormatOption = Annotated[
+    str, typer.Option("markdown", help="Report format: markdown or json.")
+]
+OutputOption = Annotated[Path | None, typer.Option(None, help="Output report path.")]
 
 
 def _build_checks() -> list[AuditCheck]:
@@ -35,9 +40,9 @@ def _build_checks() -> list[AuditCheck]:
 
 @app.command()
 def audit(
-    manifest: Path = typer.Argument(..., help="Path to manifest CSV."),
-    format: str = typer.Option("markdown", help="Report format: markdown or json."),
-    output: Optional[Path] = typer.Option(None, help="Output report path."),
+    manifest: ManifestArg,
+    format: FormatOption = "markdown",
+    output: OutputOption = None,
 ) -> None:
     df = load_manifest(manifest)
     results = [check.run(df) for check in _build_checks()]

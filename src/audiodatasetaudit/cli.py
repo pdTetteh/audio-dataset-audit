@@ -1,0 +1,48 @@
+from pathlib import Path
+from typing import Optional
+
+import typer
+from rich import print
+
+from audiodatasetaudit.checks.duplicates import DuplicateCheck
+from audiodatasetaudit.checks.imbalance import ImbalanceCheck
+from audiodatasetaudit.checks.missingness import MissingnessCheck
+from audiodatasetaudit.checks.split_integrity import SplitIntegrityCheck
+from audiodatasetaudit.manifest import load_manifest
+from audiodatasetaudit.reports.json_report import write_json_report
+from audiodatasetaudit.reports.markdown_report import write_markdown_report
+
+app = typer.Typer(help="Audit speech and audio datasets for common quality risks.")
+
+
+@app.command()
+def audit(
+    manifest: Path = typer.Argument(..., help="Path to manifest CSV."),
+    format: str = typer.Option("markdown", help="Report format: markdown or json."),
+    output: Optional[Path] = typer.Option(None, help="Output report path."),
+) -> None:
+    df = load_manifest(manifest)
+    checks = [
+        MissingnessCheck(),
+        ImbalanceCheck(),
+        DuplicateCheck(),
+        SplitIntegrityCheck(),
+    ]
+    results = [check.run(df) for check in checks]
+
+    print(f"[bold green]Loaded[/bold green] {len(df)} rows from {manifest}")
+    for result in results:
+        print(f"- {result.name}: {result.status}")
+
+    if output is not None:
+        if format == "json":
+            write_json_report(results, str(output))
+        elif format == "markdown":
+            write_markdown_report(results, str(output))
+        else:
+            raise typer.BadParameter("format must be one of: markdown, json")
+        print(f"[bold blue]Report written to[/bold blue] {output}")
+
+
+if __name__ == "__main__":
+    app()
